@@ -1,21 +1,19 @@
 // backend/db.js
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
-const MONGODB_URI = "mongodb+srv://user:user123@cluster0.7z0q4mo.mongodb.net/koreantyping?retryWrites=true&w=majority";
-
-
-let isConnected = false;
-
-export default async function dbConnect() {
-  if (isConnected) return mongoose.connection;
-
+const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(MONGODB_URI);
-    isConnected = true;
-    console.log("MongoDB connected:", conn.connection.host);
-    return conn;
+    await mongoose.connect(process.env.MONGO_URI, {
+      // these options are fine to omit in Mongoose 7, but harmless:
+      // useNewUrlParser: true,
+      // useUnifiedTopology: true,
+    });
+
+    console.log("MongoDB connected:", mongoose.connection.host);
   } catch (err) {
-    console.error("MongoDB connection error:", err);
-    throw err;
+    console.error("MongoDB connection error:", err.message);
+    process.exit(1);
   }
-}
+};
+
+module.exports = connectDB;
