@@ -1,12 +1,16 @@
 // backend/models/PracticeText.js
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
-const PracticeTextSchema = new mongoose.Schema({
-  text: { type: String, required: true },
-  level: { type: String, default: "basic" }, // basic | phrase | sentence
-  language: { type: String, default: "ko" },
-  createdAt: { type: Date, default: Date.now }
-});
+const practiceTextSchema = new mongoose.Schema(
+  {
+    text: { type: String, required: true },         // Korean phrase
+    level: { type: String, default: "basic" },      // basic / sentence etc.
+    meaning: { type: String, default: "" },         // English meaning
+    romanized: { type: String, default: "" }        // e.g. annyeonghaseyo
+  },
+  { timestamps: true }
+);
 
-export default mongoose.models.PracticeText ||
-  mongoose.model("PracticeText", PracticeTextSchema);
+const PracticeText = mongoose.model("PracticeText", practiceTextSchema);
+
+module.exports = PracticeText;

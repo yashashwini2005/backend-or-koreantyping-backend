@@ -3,12 +3,12 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      // these options are fine to omit in Mongoose 7, but harmless:
-      // useNewUrlParser: true,
-      // useUnifiedTopology: true,
-    });
+    const uri = process.env.MONGO_URI;
+    if (!uri) {
+      throw new Error("MONGO_URI is not defined in environment variables");
+    }
 
+    await mongoose.connect(uri);
     console.log("MongoDB connected:", mongoose.connection.host);
   } catch (err) {
     console.error("MongoDB connection error:", err.message);

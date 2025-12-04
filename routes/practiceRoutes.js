@@ -1,36 +1,32 @@
 // backend/routes/practiceRoutes.js
-import express from "express";
-import PracticeText from "../models/PracticeText.js";
+const express = require("express");
+const PracticeText = require("../models/PracticeText");
 
 const router = express.Router();
 
-// GET /api/practice?level=basic&limit=20
-router.get("/", async (req, res) => {
-  const level = req.query.level || "basic";
-  const limit = parseInt(req.query.limit || "30", 10);
-
+// GET /api/practice?level=basic&limit=5
+router.get("/practice", async (req, res) => {
   try {
-    const docs = await PracticeText.find({ level }).limit(limit).lean();
-    res.json({ ok: true, texts: docs });
+    const level = req.query.level || "basic";
+    const limit = parseInt(req.query.limit || "10", 10);
+
+    const texts = await PracticeText.find({ level }).limit(limit);
+    res.json({ texts });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ ok: false, error: "db_error" });
+    console.error("Error fetching practice texts:", err.message);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
-// POST /api/practice
-router.post("/", async (req, res) => {
-  const { text, level = "basic" } = req.body;
-  if (!text) return res.status(400).json({ ok: false, error: "text_required" });
-
+// optional: get all texts
+router.get("/practice/all", async (req, res) => {
   try {
-    const p = new PracticeText({ text, level });
-    await p.save();
-    res.status(201).json({ ok: true, text: p });
+    const texts = await PracticeText.find({});
+    res.json({ texts });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ ok: false, error: "db_error" });
+    console.error("Error fetching all texts:", err.message);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
-export default router;
+module.exports = router;
